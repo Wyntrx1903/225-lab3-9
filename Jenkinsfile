@@ -41,12 +41,17 @@ pipeline {
         stage('Deploy to Dev Environment') {
             steps {
                 script {
-                    // This sets up the Kubernetes configuration using the specified KUBECONFIG
-                    def kubeConfig = readFile(KUBECONFIG)
-                    // This updates the deployment-dev.yaml to use the new image tag
+                    // Update the image tag in YAML
                     sh "sed -i 's|${DOCKER_IMAGE}:latest|${DOCKER_IMAGE}:${IMAGE_TAG}|' deployment-dev.yaml"
-                   // sh 'kubectl apply -f pv-claim.yaml'
-                   sh "kubectl apply -f deployment-dev.yaml"
+        
+                    // Apply the updated deployment
+                    sh "kubectl apply -f deployment-dev.yaml"
+        
+                    // Force restart to ensure new image is pulled
+                    sh "kubectl rollout restart deployment flask-deployment"
+        
+                    // Wait for rollout to finish
+                    sh "kubectl rollout status deployment flask-deployment"
                 }
             }
         }
