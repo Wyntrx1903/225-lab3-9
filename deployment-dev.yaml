@@ -16,7 +16,8 @@ spec:
     spec:
       containers:
         - name: flask
-          image: cithit/nashtb:latest   #<-----change this!!!!
+          image: cithit/nashtb:latest #<-----change this!!!!
+          imagePullPolicy: Always
           ports:
             - containerPort: 5000
 
